@@ -34,7 +34,7 @@ public class GamePanel extends JPanel {
 			}
 		}
 
-		g.setColor(Color.GREEN);
+		g.setColor(Color.BLACK);
 
 		for (int x = 0; x < cells[0].length; x++) {
 			g.drawLine(x * width, 0, x * width, 600);

@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class Life implements MouseListener, Runnable {
 
-	private boolean[][] cells = new boolean[20][20];
+	public boolean[][] cells = new boolean[200][200];
 	private JFrame frame = new JFrame("Life simulation");
 	private GamePanel panel = new GamePanel(cells);
 	private ActionListener actionListener;
@@ -203,7 +203,7 @@ public class Life implements MouseListener, Runnable {
 		if (!started) {
 			int x = e.getX() / (600 / cells[0].length);
 			int y = e.getY() / (600 / cells.length);
-			if (x < 20 && y < 20) {
+			if (x < cells[0].length && y < cells.length) {
 				cells[x][y] = !cells[x][y];
 				System.out.println(x + " " + y);
 				frame.repaint();
