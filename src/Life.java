@@ -1,26 +1,25 @@
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.util.Random;
 
 public class Life implements MouseListener, Runnable {
 
-	public boolean[][] cells = new boolean[200][200];
+	private boolean[][] cells = new boolean[35][35];
 	private JFrame frame = new JFrame("Life simulation");
 	private GamePanel panel = new GamePanel(cells);
 	private ActionListener actionListener;
-	Random r = new Random();
-	boolean started = false;
+	private boolean started = false;
+	private int speed = 300;
 
-	//buttons
 	private JButton nextGenerationButton;
 	private JButton startButton;
 	private JButton stopButton;
 	private JButton randomButton;
 	private JButton clearButton;
+
+	Random r = new Random();
 
 	public Life() {
 		frameInitializing();
@@ -29,30 +28,42 @@ public class Life implements MouseListener, Runnable {
 	private void frameInitializing() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception ex) {}
+		} catch (Exception ignored) {}
 
-		frame.setPreferredSize(new Dimension(606, 700));
+		frame.setPreferredSize(new Dimension(706, 800));
 
 		nextGenerationButton = new JButton("Next generation");
-		nextGenerationButton.setBounds(10, 620, 130, 30);
+		nextGenerationButton.setBounds(10, 720, 120, 30);
 		panel.add(nextGenerationButton);
 
 		startButton = new JButton("Start");
-		startButton.setBounds(150, 620, 100, 30);
+		startButton.setBounds(140, 720, 80, 30);
 		panel.add(startButton);
 
 		stopButton = new JButton("Stop");
-		stopButton.setBounds(260, 620, 100, 30);
+		stopButton.setBounds(230, 720, 80, 30);
 		stopButton.setEnabled(false);
 		panel.add(stopButton);
 
 		randomButton = new JButton("Random");
-		randomButton.setBounds(370, 620, 100, 30);
+		randomButton.setBounds(320, 720, 80, 30);
 		panel.add(randomButton);
 
 		clearButton = new JButton("Clear");
-		clearButton.setBounds(480, 620, 100, 30);
+		clearButton.setBounds(410, 720, 80, 30);
 		panel.add(clearButton);
+
+		JLabel speedLabel = new JLabel("Speed:");
+		speedLabel.setBounds(500, 720, 100, 30);
+		panel.add(speedLabel);
+
+		JSlider speedSlider = new JSlider(0, 950, 300);
+		speedSlider.setBounds(540, 720, 150, 30);
+		panel.add(speedSlider);
+		speedSlider.addChangeListener(e -> {
+			int value = ((JSlider)e.getSource()).getValue();
+			speed = 1000 - value;
+		});
 
 		actionListener = e -> {
 			if (e.getSource().equals(nextGenerationButton)) {
@@ -107,17 +118,18 @@ public class Life implements MouseListener, Runnable {
 		while (started) {
 			step();
 			try {
-				Thread.sleep(500);
+				Thread.sleep(speed);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void step() {
+	private void step() {
 		boolean[][] nextCells = new boolean[cells.length][cells[0].length];
-		for (int i = 0; i < cells.length; i++) {
-			for (int j = 0; j < cells[0].length; j++) {
+		int len = cells.length;
+		for (int i = 0; i < len; i++) {
+			for (int j = 0; j < len; j++) {
 				int count = 0;
 				if (i > 0 && j > 0 && cells[i - 1][j - 1]) {
 					count++;
@@ -125,37 +137,29 @@ public class Life implements MouseListener, Runnable {
 				if (i > 0 && cells[i - 1][j]) {
 					count++;
 				}
-				if (i > 0 && j < cells[0].length - 1 && cells[i - 1][j + 1]) {
+				if (i > 0 && j < len - 1 && cells[i - 1][j + 1]) {
 					count++;
 				}
 				if (j > 0 && cells[i][j - 1]) {
 					count++;
 				}
-				if (j < cells[0].length - 1 && cells[i][j + 1]) {
+				if (j < len - 1 && cells[i][j + 1]) {
 					count++;
 				}
-				if (i < cells.length - 1 && j > 0 && cells[i + 1][j - 1]){
+				if (i < len - 1 && j > 0 && cells[i + 1][j - 1]){
 					count++;
 				}
-				if (i < cells.length - 1 && cells[i + 1][j]) {
+				if (i < len - 1 && cells[i + 1][j]) {
 					count++;
 				}
-				if (i < cells.length - 1 && j < cells[0].length - 1 && cells[i + 1][j + 1]) {
+				if (i < len - 1 && j < len - 1 && cells[i + 1][j + 1]) {
 					count++;
 				}
 
 				if (cells[i][j]) {
-					if (count == 2 || count == 3) {
-						nextCells[i][j] = true;
-					} else {
-						nextCells[i][j] = false;
-					}
+					nextCells[i][j] = count == 2 || count == 3;
 				} else {
-					if (count == 3) {
-						nextCells[i][j] = true;
-					} else {
-						nextCells[i][j] = false;
-					}
+					nextCells[i][j] = count == 3;
 				}
 			}
 		}
@@ -189,6 +193,19 @@ public class Life implements MouseListener, Runnable {
 	}
 
 	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (!started) {
+			int x = e.getX() / (700 / cells[0].length);
+			int y = e.getY() / (700 / cells.length);
+			if (x < cells[0].length && y < cells.length) {
+				cells[x][y] = !cells[x][y];
+				System.out.println(x + " " + y);
+				frame.repaint();
+			}
+		}
+	}
+
+	@Override
 	public void mouseClicked(MouseEvent e) {
 
 	}
@@ -196,19 +213,6 @@ public class Life implements MouseListener, Runnable {
 	@Override
 	public void mousePressed(MouseEvent e) {
 
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		if (!started) {
-			int x = e.getX() / (600 / cells[0].length);
-			int y = e.getY() / (600 / cells.length);
-			if (x < cells[0].length && y < cells.length) {
-				cells[x][y] = !cells[x][y];
-				System.out.println(x + " " + y);
-				frame.repaint();
-			}
-		}
 	}
 
 	@Override
