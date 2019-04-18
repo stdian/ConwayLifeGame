@@ -6,12 +6,12 @@ import java.util.Random;
 
 public class Life implements MouseListener, Runnable {
 
-	private boolean[][] cells = new boolean[35][35];
+	private boolean[][] cells = new boolean[30][30];
 	private JFrame frame = new JFrame("Life simulation");
 	private GamePanel panel = new GamePanel(cells);
 	private ActionListener actionListener;
 	private boolean started = false;
-	private int speed = 300;
+	private int speed = 700;
 
 	private JButton nextGenerationButton;
 	private JButton startButton;
@@ -30,39 +30,66 @@ public class Life implements MouseListener, Runnable {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception ignored) {}
 
-		frame.setPreferredSize(new Dimension(706, 800));
+		frame.setPreferredSize(new Dimension(606, 700));
 
 		nextGenerationButton = new JButton("Next generation");
-		nextGenerationButton.setBounds(10, 720, 120, 30);
+		nextGenerationButton.setBounds(10, 610, 110, 30);
 		panel.add(nextGenerationButton);
 
 		startButton = new JButton("Start");
-		startButton.setBounds(140, 720, 80, 30);
+		startButton.setBounds(130, 610, 70, 30);
 		panel.add(startButton);
 
 		stopButton = new JButton("Stop");
-		stopButton.setBounds(230, 720, 80, 30);
+		stopButton.setBounds(210, 610, 70, 30);
 		stopButton.setEnabled(false);
 		panel.add(stopButton);
 
 		randomButton = new JButton("Random");
-		randomButton.setBounds(320, 720, 80, 30);
+		randomButton.setBounds(290, 610, 80, 30);
 		panel.add(randomButton);
 
 		clearButton = new JButton("Clear");
-		clearButton.setBounds(410, 720, 80, 30);
+		clearButton.setBounds(380, 610, 70, 30);
 		panel.add(clearButton);
 
 		JLabel speedLabel = new JLabel("Speed:");
-		speedLabel.setBounds(500, 720, 100, 30);
+		speedLabel.setBounds(460, 610, 100, 30);
 		panel.add(speedLabel);
 
 		JSlider speedSlider = new JSlider(0, 950, 300);
-		speedSlider.setBounds(540, 720, 150, 30);
+		speedSlider.setBounds(500, 610, 90, 30);
 		panel.add(speedSlider);
 		speedSlider.addChangeListener(e -> {
 			int value = ((JSlider)e.getSource()).getValue();
 			speed = 1000 - value;
+		});
+
+		JMenuBar menuBar = new JMenuBar();
+		JMenu menu = new JMenu("Field size");
+		JMenuItem smallMenu = new JMenuItem("Small");
+		JMenuItem mediumMenu = new JMenuItem("Medium");
+		JMenuItem bigMenu = new JMenuItem("Big");
+		menu.add(smallMenu);
+		menu.add(mediumMenu);
+		menu.add(bigMenu);
+		menuBar.add(menu);
+		frame.setJMenuBar(menuBar);
+
+		smallMenu.addActionListener(e -> {
+			cells = new boolean[20][20];
+			panel.setCells(cells);
+			frame.repaint();
+		});
+		mediumMenu.addActionListener(e -> {
+			cells = new boolean[30][30];
+			panel.setCells(cells);
+			frame.repaint();
+		});
+		bigMenu.addActionListener(e -> {
+			cells = new boolean[40][40];
+			panel.setCells(cells);
+			frame.repaint();
 		});
 
 		actionListener = e -> {
@@ -77,12 +104,14 @@ public class Life implements MouseListener, Runnable {
 					randomButton.setEnabled(false);
 					clearButton.setEnabled(false);
 					nextGenerationButton.setEnabled(false);
+					menu.setEnabled(false);
 					Thread t = new Thread(this);
 					t.start();
 				}
 			}
 			if (e.getSource().equals(stopButton)) {
 				started = false;
+				menu.setEnabled(true);
 				startButton.setEnabled(true);
 				stopButton.setEnabled(false);
 				randomButton.setEnabled(true);
@@ -195,11 +224,10 @@ public class Life implements MouseListener, Runnable {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (!started) {
-			int x = e.getX() / (700 / cells[0].length);
-			int y = e.getY() / (700 / cells.length);
+			int x = e.getX() / (600 / cells[0].length);
+			int y = e.getY() / (600 / cells.length);
 			if (x < cells[0].length && y < cells.length) {
 				cells[x][y] = !cells[x][y];
-				System.out.println(x + " " + y);
 				frame.repaint();
 			}
 		}

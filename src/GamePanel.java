@@ -12,7 +12,7 @@ public class GamePanel extends JPanel {
 	}
 
 	private void panelInitializing() {
-		this.setPreferredSize(new Dimension(706, 700));
+		this.setPreferredSize(new Dimension(600, 600));
 		this.setLayout(null);
 	}
 
@@ -22,8 +22,8 @@ public class GamePanel extends JPanel {
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		width = 700 / cells[0].length;
-		height = 700 / cells.length;
+		width = 600 / cells[0].length;
+		height = 600 / cells.length;
 
 		g.setColor(Color.BLUE);
 		for (int i = 0; i < cells.length; i++) {
@@ -37,12 +37,12 @@ public class GamePanel extends JPanel {
 		g.setColor(Color.BLACK);
 
 		for (int x = 0; x < cells[0].length; x++) {
-			g.drawLine(x * width, 0, x * width, 700);
+			g.drawLine(x * width, 0, x * width, 600);
 		}
 		for (int y = 0; y < cells.length; y++) {
-			g.drawLine(0, y * height, 700, y * height);
+			g.drawLine(0, y * height, 600, y * height);
 		}
 
-		g.drawRect(0, 0, 700, 700);
+		g.drawRect(0, 0, 600, 600);
 	}
 }
